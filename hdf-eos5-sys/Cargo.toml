@@ -7,3 +7,7 @@ edition = "2021"
 
 [build-dependencies]
 bindgen = "0.70"
+cc = "1.0"
+
+[build]
+rustflags = ["-L/path/to/hdf-eos5/lib", "-L/path/to/hdf5/lib"]
