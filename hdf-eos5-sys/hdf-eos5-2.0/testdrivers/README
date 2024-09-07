@@ -1,0 +1,114 @@
+==============================================================================
+
+FILE:    README
+UPDATED: 06/20/01  A.M.
+         Aug 02    S.Z
+
+==============================================================================
+
+These files are provided as an aid to the user for examples in how to use the
+HDF-EOS library.  The test drivers have been run on every platform supported
+by the Toolkit.  Platforms supported by the Toolkit are listed in the 
+README file located in doc directory.
+
+NOTE:  YOU MUST HAVE ALL OF THE TEXT DATA FILES IN THE SAME DIRECTORY AS YOUR 
+       POINT TEST DRIVERS.  THEY WILL CRASH WITHOUT THEM !
+ 
+       THESE DATA FILES ARE:
+
+							fixedBuoy0.txt
+							fixedBuoy1s.txt
+							floatBuoy1.txt
+							fixedBuoy1.txt
+							floatBuoy0.txt
+							simple.txt
+
+
+
+DRIVER(S)			    PLATFORM(S)
+=========			    ===========
+
+TestSwath.c			    C on all supported platforms
+TestGrid.c
+TestPoint.c
+TestZa.c
+TestProfile.c
+TestAlias.c
+
+testswath32.f			FORTRAN 77 on all supported platforms
+testgrid32.f			FORTRAN 90 on SGI for 32-bit
+testpoint32.f
+testza32.f
+
+testswath64.f			FORTRAN 90 on SGI for 64-bit
+testgrid64.f
+testpoint64.f
+testza64.f
+
+
+COMPILING TEST DRIVERS
+======================
+
+Below are samples of how the test driver can be compilied and linked to create 
+executables.
+
+The HDFSYS flag is set by the user.  The list below gives what it should be
+for each supported platform:
+
+PLATFORM		    HDFSYS FLAG
+========		    ===========
+
+Dec			        DEC_ALPHA
+Sgi			        IRIX
+Sgi Power Chall.	SGI64
+Ibm			        IBM6000
+Sun Solaris 2.5		SUN5
+Hp			        HP9000
+Linux               LINUX
+
+
+==============================================================================
+                              Swath/Point/ZA 
+------------------------------------------------------------------------------
+
+cc -DHDFSYS -o filename.o -I$HDFINC -I$HDFEOS_INC -c filename.c
+cc -DHDFSYS -o filename filename.o -L$HDFLIB -L$HDFEOS_LIB \
+        -lhe5_hdfeos -lhdf5 -lnsl -lm
+
+NOTE: substitute "filename" with the name of a driver, AND THE ORDER OF THE 
+      LIBRARIES IS IMPORTANT. 
+      IN ADDITION: NOTICE THAT WE POINT TO BOTH STANDARD HDF AND HDFEOS 
+      LIBRARIES. 
+      THE "-lnsl" FLAG IS REQUIRED FOR THE SUN PLATFORMS ONLY	
+
+
+==============================================================================
+                                Grid 
+------------------------------------------------------------------------------
+
+cc -DHDFSYS -o filename.o -I$HDFINC -I$HDFEOS_INC -c filename.c
+cc -DHDFSYS -o filename filename.o -L$HDFLIB -L$HDFEOS_LIB \
+        -lhe5_hdfeos -lGctp -lhdf5 -lnsl -lm
+       
+NOTE: ON LINUX PLATFORM YOU ALSO NEED "-lz"
+  
+NOTE: subsitute "filename" with the name of a driver, AND THE ORDER OF THE 
+      LIBRARIES IS IMPORTANT.  
+      IN ADDITION:  NOTICE THAT THE GCTP LIBRARY IS SECOND IN THE LIBRARY 
+      LIST.
+      ALSO: YOU NEED TO POINT TO WHERE THE GEOLIB LIBRARY IS LOCATED ON 
+      YOUR SYSTEM.
+      THE "-lnsl" FLAG IS REQUIRED FOR THE SUN PLATFORMS ONLY
+
+
+==============================================================================
+
+
+
+
+
+
+
+
+
+

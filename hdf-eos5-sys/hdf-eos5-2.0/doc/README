@@ -1,0 +1,244 @@
+Installing HDF-EOS5 using Autoconf/Automake
+-------------------------------------------
+
+Prerequisite
+------------
+The HDF-EOS5 library requires HDF5 library version 1.8.19 or later. You can download HDF5
+from the HDF Group:
+
+    https://www.hdfgroup.org/downloads/hdf5/
+
+or, depending upon your system, you may be able to install it from a package. The HDF5
+libary may depend upon other libraries, such as szip, z (compress). The HDF-EOS5
+configure script will do its best to determine these dependencies and find the appropriate
+libraries, but it may occasionally need help. Please refer to the troubleshooting section
+at the bottom of this document.
+
+
+
+Configuring
+-----------
+After downloading and unpacking the tar file, 'cd' into the hdfeos5 directory and type
+
+    ./configure
+
+This will run a series of tests to determine the necessary library dependencies, and
+configure the makefiles accordingly. The configure script will output a summary of the
+configuration options at completion. These can be useful for troubleshooting.
+
+By default, the HDF-EOS5 libraries and include headers will be installed in /usr/local. This
+can be changed by using the --prefix option when running configure, e.g.
+
+    ./configure --prefix=/custom/install/location
+
+A number of other options may be provided to the configure script. You can get details
+of these options using the command:
+
+    ./configure --help
+
+
+
+
+Building
+--------
+
+Once configured, you can build HDF-EOS5 by simply type
+
+    make
+
+from the hdfeos5 directory.
+
+
+Tests
+-----
+The HDF-EOS5 library comes with some tests. You can run these using the command
+
+    make check
+
+from the hdfeos5 directory. These test may provide useful examples, but USE AT YOUR
+OWN RISK.
+
+
+
+Installing
+--------
+
+To install HDF-EOS5, simply type
+
+    make install
+
+from the hdfeos5 directory. You need to make sure you have the necessary permissions to
+install the files in the chosen location.
+
+
+
+
+
+Troubleshooting
+---------------
+
+General
+-------
+This section contains general troubleshooting tips. Additional sections below detail
+known issues for specific platforms.
+
+* Determining HDF5 Dependencies
+
+    It can be difficult to find out what additional libraries HDF5 depends upon. This is usually
+    just libz, but may also include libsz. You can get an idea of the dependencies
+    by using the h5cc tool (you may have to search for this):
+
+        h5cc -show
+
+    This will produce output similar to the following:
+
+        gcc -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_BSD_SOURCE -O0 -g -pipe -Wall
+            -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4
+            -grecord-gcc-switches -m64 -mtune=generic -L/usr/lib64 /usr/lib64/libhdf5_hl.a
+            /usr/lib64/libhdf5.a -Wl,-z,relro -lsz -lz -ldl -lm -Wl,-rpath -Wl,/usr/lib64
+
+    It lists the libraries that HDF5 (and hence HDF-EOS5) programs will need to link against.
+    In this case we can see both -lsz (libsz) and -lz (libz).
+
+
+* Finding libraries
+
+    Most of the libraries need by HDF5 and HDF-EOS5 should be found automatically by
+    the configure script, but if it cannot find them, you will need to provide that
+    information to the configure script explicitly. If you need to find a library on
+    your system, you can do this with a simple command: e.g. To find the sz library:
+
+        find / -name 'libsz.*'
+
+    This might produce output as follows:
+
+        /usr/lib64/libsz.so
+        /usr/lib64/libsz.so.2
+        /usr/lib64/libsz.so.2.0.1
+
+    In this case, we have a dynamic (shared) sz library in /usr/lib64  We can tell configure
+    where to find it as follows:
+
+        ./configure --with-szlib=/usr/lib64
+
+    If you cannot find a particular library, you will need to install the appropriate
+    package.
+
+
+* Installing missing packages
+
+    Linux distributions generally use a package manager to install software packages, though
+    the specific tool varies depending upon the distribution. For example, Centos may use
+    'yum' while Ubuntu may use 'apt'.
+
+    Max OSX systems, while 'Linux like', does not have an official package management tool like
+    the Linux systems. However, there are independently developed tools such as
+    MacPorts (https://www.macports.org/) and HomeBrew (https://brew.sh/) which are just
+    as capable, and can provide everything you need.
+
+    Packages often come in two different 'flavors' - regular, and 'devel'. The regular versions
+    contain the libraries needed to run programs that use them. The 'devel' packages are
+    developer oriented packages that include headers files needed to compile your own
+    programs using that use the libraries. The following is a list of the key packages
+    needed by HDF-EOS5:
+
+        hdf5    The main HDF5 package. A 'devel' version is needed since HDF-EOS5 compiles
+                against this library and needs the header files.
+
+        zlib    Compression library. A regular version can be used since HDF-EOS5 does not
+                explicity invoke compression functions.
+
+        aec     Adaptive Entropy Encoding library (szip). This may or may not be needed,
+                depending upon how HDF5 was built. If you have access to the h5cc commmand,
+                you can use 'h5cc -show' to determine whether or not it is needed. If
+                the output contains '-lsz', then you need aec. Most package versions of
+                HDF5 do not use aec. If required, a regular version can be used.
+
+    Examples of command to install packages on some of the common linux distributions are
+    given below.
+
+
+
+
+Linux (Ubuntu/Debian)
+---------------------
+
+* Finding/Installing packages
+
+    These distributions tend to use 'apt' as the package manager. You can search for packages
+    using apt as follows:
+
+        apt-cache search hdf
+
+    A package can be installed as follows:
+
+        apt-get install libhdf4-dev
+
+    One of the advantages of package managers is that if you install a package in this way, it
+    will also install all the dependencies required by the package. You can see which additional
+    packages a given package depends on as follows:
+
+        apt-cache depends libhdf4-dev
+
+    This is also a good way to determine whether or not aec is required.
+
+
+
+Linux (Redhat/Centos)
+---------------------
+
+* Finding/Installing packages
+
+    These distributions tend to use 'yum' as the package manager. You can search for packages
+    using yum as follows:
+
+        yum search hdf5
+
+    A package can be installed as follows:
+
+        yum install hdf5-devel
+
+    One of the advantages of package managers is that if you install a package in this way, it
+    will also install all the dependencies required by the package. You can see which additional
+    packages a given package depends on as follows:
+
+        yum deplist hdf5-devel
+
+    This is also a good way to determine whether or not aec is required.
+
+
+
+Mac OSX
+-------
+
+* Finding/Installing packages using MacPorts
+
+    You can search for packages using MacPorts as follows:
+
+        port search --name "*hdf5*"
+
+    A package can be installed as follows (you may need to run this using sudo):
+
+        port install hdf5
+
+    As with Linux base package managers, MacPorts will also install all the depenencies required
+    by a package. You can see which additional packages a given package depends on as follows:
+
+        port info hdf5
+
+    Look for a line beginning 'Library Dependencies'. You can ignore any line beginning with
+    'Build Dependencies' since you will not be building HDF5.
+
+
+* Missing library 'System'.
+
+    If your build fails with a message indicating it cannot find a library called 'System',
+    try adding the following configure option:
+
+    ./configure LDFLAGS=-L/usr/local
+
+    This gives the location of the library to the linker.
+
+
+
+
