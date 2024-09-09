@@ -2,6 +2,7 @@
 name = "hdf-eos5-sys"
 version = "0.1.0"
 edition = "2021"
+links = "libhdf-eos5"
 
 [dependencies]
 # Use git instead: https://github.com/aldanor/hdf5-rust/tree/master/hdf5-sys
