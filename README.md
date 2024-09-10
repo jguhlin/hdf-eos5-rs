@@ -1,5 +1,5 @@
 # Note
-Non-working FFI interface to hdf-eos5 C library.
+Semi-working FFI interface to hdf-eos5 C library.
 
 # License
 
